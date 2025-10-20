@@ -7,3 +7,23 @@
 1. `git clone --recurse-submodules https://github.com/radxa-pkg/aic8800.git`
 2. Open in [`devcontainer`](https://code.visualstudio.com/docs/devcontainers/containers)
 3. `make deb`
+
+## RPM
+
+Use the helper script to generate an RPM that bundles the firmware and RF test
+utilities. The script creates both binary and source RPMs under `dist/rpm`.
+Ensure the standard RPM build tooling is installed (e.g. `rpmbuild`, `make`,
+`gcc`, and supporting macros provided by your distribution).
+
+```
+scripts/install-rpm.sh
+```
+
+Pass `--help` for the full list of options, including custom output
+directories, version overrides, and automatic installation of the generated
+package.
+
+If you prefer to call `rpmbuild` directly, point it at
+`packaging/aic8800.spec`. The spec file derives the version and release from
+`debian/changelog` when run from the repository, and you can override the
+values with `--define "rpm_version <ver>" --define "rpm_release <rel>"`.

@@ -1,0 +1,51 @@
+%{!?repo_root:%global repo_root %{_specdir}/..}
+%{!?rpm_version:%global rpm_version %(cd %{repo_root} 2>/dev/null && debver=$(sed -n '1s/.*(\(.*\)).*/\1/p' debian/changelog 2>/dev/null); if [ -z "$debver" ]; then echo 0; else upstream=${debver%%-*}; if [ -z "$upstream" ]; then upstream=$debver; fi; sanitized=$(printf '%s' "$upstream" | tr '+~' '._'); echo "$sanitized"; fi)}
+%{!?rpm_release:%global rpm_release %(cd %{repo_root} 2>/dev/null && debver=$(sed -n '1s/.*(\(.*\)).*/\1/p' debian/changelog 2>/dev/null); if [ -z "$debver" ]; then echo 1; else upstream=${debver%%-*}; if [ "$upstream" = "$debver" ] || [ -z "$upstream" ]; then echo 1; else echo ${debver##*-}; fi; fi)}
+
+Name:           aic8800
+Version:        %{rpm_version}
+Release:        %{rpm_release}%{?dist}
+Summary:        Firmware and utilities for AIC8800 wireless chipsets
+
+License:        GPL-3.0-only and Redistributable, no modification permitted
+URL:            https://github.com/radxa-pkg/aic8800
+Source0:        %{name}-%{version}.tar.gz
+BuildRequires:  gcc
+BuildRequires:  make
+
+%description
+The AIC8800 repository ships firmware blobs and RF validation utilities
+used with the AIC8800 wireless family.  This RPM bundles the firmware
+into /lib/firmware/aic8800_fw and installs the lightweight test tools
+that upstream provides.
+
+%prep
+%autosetup
+
+%build
+%make_build -C src/tools/aicrf_test
+
+%install
+install -d %{buildroot}/lib/firmware/aic8800_fw/USB
+cp -a src/USB/driver_fw/fw/. %{buildroot}/lib/firmware/aic8800_fw/USB/
+
+install -d %{buildroot}/lib/firmware/aic8800_fw/SDIO
+cp -a src/SDIO/driver_fw/fw/. %{buildroot}/lib/firmware/aic8800_fw/SDIO/
+
+install -d %{buildroot}/lib/firmware/aic8800_fw/PCIE
+cp -a src/PCIE/driver_fw/fw/. %{buildroot}/lib/firmware/aic8800_fw/PCIE/
+
+install -d %{buildroot}%{_bindir}
+install -m 0755 src/tools/aicrf_test/bt_test %{buildroot}%{_bindir}/bt_test
+install -m 0755 src/tools/aicrf_test/wifi_test %{buildroot}%{_bindir}/wifi_test
+
+%files
+%license LICENSE
+%doc README.md src/firmware_version.md src/release_note.txt
+/lib/firmware/aic8800_fw
+%{_bindir}/bt_test
+%{_bindir}/wifi_test
+
+%changelog
+* Thu May 15 2025 Automation <noreply@example.com> - %{rpm_version}-%{rpm_release}
+- Initial RPM packaging of firmware and RF test utilities.

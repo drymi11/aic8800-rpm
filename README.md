@@ -12,6 +12,8 @@
 
 Use the helper script to generate an RPM that bundles the firmware and RF test
 utilities. The script creates both binary and source RPMs under `dist/rpm`.
+Ensure the standard RPM build tooling is installed (e.g. `rpmbuild`, `make`,
+`gcc`, and supporting macros provided by your distribution).
 
 ```
 scripts/install-rpm.sh

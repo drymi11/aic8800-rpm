@@ -6,7 +6,8 @@ Summary:        Firmware and utilities for AIC8800 wireless chipsets
 License:        GPL-3.0-only and Redistributable, no modification permitted
 URL:            https://github.com/radxa-pkg/aic8800
 Source0:        %{name}-%{version}.tar.gz
-BuildArch:      noarch
+BuildRequires:  gcc
+BuildRequires:  make
 
 %description
 The AIC8800 repository ships firmware blobs and RF validation utilities
@@ -18,7 +19,7 @@ that upstream provides.
 %autosetup
 
 %build
-# Nothing to build - firmware blobs are shipped as-is upstream.
+%make_build -C src/tools/aicrf_test
 
 %install
 install -d %{buildroot}/lib/firmware/aic8800_fw/USB

@@ -22,3 +22,8 @@ scripts/install-rpm.sh
 Pass `--help` for the full list of options, including custom output
 directories, version overrides, and automatic installation of the generated
 package.
+
+If you prefer to call `rpmbuild` directly, point it at
+`packaging/aic8800.spec`. The spec file derives the version and release from
+`debian/changelog` when run from the repository, and you can override the
+values with `--define "rpm_version <ver>" --define "rpm_release <rel>"`.

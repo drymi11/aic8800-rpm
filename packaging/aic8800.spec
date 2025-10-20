@@ -1,6 +1,10 @@
+%{!?repo_root:%global repo_root %{_specdir}/..}
+%{!?rpm_version:%global rpm_version %(cd %{repo_root} 2>/dev/null && debver=$(sed -n '1s/.*(\(.*\)).*/\1/p' debian/changelog 2>/dev/null); if [ -z "$debver" ]; then echo 0; else upstream=${debver%%-*}; if [ -z "$upstream" ]; then upstream=$debver; fi; sanitized=$(printf '%s' "$upstream" | tr '+~' '._'); echo "$sanitized"; fi)}
+%{!?rpm_release:%global rpm_release %(cd %{repo_root} 2>/dev/null && debver=$(sed -n '1s/.*(\(.*\)).*/\1/p' debian/changelog 2>/dev/null); if [ -z "$debver" ]; then echo 1; else upstream=${debver%%-*}; if [ "$upstream" = "$debver" ] || [ -z "$upstream" ]; then echo 1; else echo ${debver##*-}; fi; fi)}
+
 Name:           aic8800
-Version:        @VERSION@
-Release:        @RELEASE@%{?dist}
+Version:        %{rpm_version}
+Release:        %{rpm_release}%{?dist}
 Summary:        Firmware and utilities for AIC8800 wireless chipsets
 
 License:        GPL-3.0-only and Redistributable, no modification permitted
@@ -43,5 +47,5 @@ install -m 0755 src/tools/aicrf_test/wifi_test %{buildroot}%{_bindir}/wifi_test
 %{_bindir}/wifi_test
 
 %changelog
-* Thu May 15 2025 Automation <noreply@example.com> - @VERSION@-@RELEASE@
+* Thu May 15 2025 Automation <noreply@example.com> - %{rpm_version}-%{rpm_release}
 - Initial RPM packaging of firmware and RF test utilities.

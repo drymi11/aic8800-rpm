@@ -116,12 +116,14 @@ archive_name="aic8800-${rpm_version}.tar.gz"
 ( cd "${PROJECT_ROOT}" && git archive --format=tar.gz --prefix=aic8800-${rpm_version}/ HEAD ) > "${workdir}/SOURCES/${archive_name}"
 
 spec_path="${workdir}/SPECS/aic8800.spec"
-sed \
-    -e "s/@VERSION@/${rpm_version}/g" \
-    -e "s/@RELEASE@/${rpm_release}/g" \
-    "${PROJECT_ROOT}/packaging/aic8800.spec.in" > "${spec_path}"
+cp "${PROJECT_ROOT}/packaging/aic8800.spec" "${spec_path}"
 
-rpmbuild --define "_topdir ${workdir}" -bb "${spec_path}"
+rpmbuild \
+    --define "_topdir ${workdir}" \
+    --define "repo_root ${PROJECT_ROOT}" \
+    --define "rpm_version ${rpm_version}" \
+    --define "rpm_release ${rpm_release}" \
+    -bb "${spec_path}"
 
 find "${workdir}/RPMS" -type f -name '*.rpm' -exec cp -v {} "${OUTPUT_DIR}" \;
 find "${workdir}/SRPMS" -type f -name '*.src.rpm' -exec cp -v {} "${OUTPUT_DIR}" \;
